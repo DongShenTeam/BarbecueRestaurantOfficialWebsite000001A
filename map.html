@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导航系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            color: #0066cc;
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, #0066cc 0%, #004d99 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+        
+        .page-header h2 {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+        
+        .map-section {
+            padding: 40px 0;
+        }
+        
+        .map-container {
+            height: 500px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+        
+        #map-box {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .map-fallback {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            height: 100%;
+            color: #666;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .navigation-panel {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 30px;
+        }
+        
+        .navigation-panel h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: #0066cc;
+            color: #fff;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 15px;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: #004d99;
+        }
+        
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .status-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        footer {
+            background-color: #1a1a1a;
+            color: #fff;
+            padding: 30px 0;
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .company-info {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .nav-options {
+            margin: 15px 0;
+        }
+        
+        .nav-option {
+            margin: 10px 0;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <h1>东神企业开放平台_网络科技 - 地图导航</h1>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 页面头部 -->
+    <section class="page-header">
+        <div class="container">
+            <h2>烧烤店位置导航</h2>
+            <p>快速找到我们烧烤店的位置</p>
+        </div>
+    </section>
+
+    <!-- 地图区域 -->
+    <section class="map-section">
+        <div class="container">
+            <div class="map-container">
+                <div id="map-box">
+                    <div class="map-fallback">
+                        <h3>正在加载地图...</h3>
+                        <p>如果地图无法显示，请检查网络连接</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="company-info">
+                <h3>烧烤店信息</h3>
+                <p><strong>烧烤店名称：</strong>__________________</p>
+                <p><strong>烧烤店地址：</strong>福建省漳州市龙海区<br>
+                石码人民西路25-4号(距离十字红绿灯路口80-96米处)。</p>
+                <p><strong>到达指引：</strong>高德导航 | 百度导航 | 腾讯导航<br>
+                龙海28路公交车-第18站西头路口站下车走到十字红绿灯路口往左边过马路，徒步走大约80-96米就到<br>
+                (龙海公交总站往龙海公交总站方向-龙海28路公交车)</p>
+                <p><strong>联系电话：</strong>0596-_______ / 1__________</p>
+            </div>
+            
+            <div class="navigation-panel">
+                <h3>导航到店</h3>
+                
+                <div class="nav-options">
+                    <div class="nav-option">
+                        <strong>方案一：</strong> 直接唤起高德App（已安装高德地图推荐）
+                    </div>
+                    <div class="nav-option">
+                        <strong>方案二：</strong> 自动定位后导航（需要位置权限）
+                    </div>
+                </div>
+                
+                <p> 方案一 </p>
+                <div class="btn-container">
+                    <!-- 直接唤起高德App -->
+                    <a class="btn" href="androidamap://navi?sourceApplication=appname&poiname=厦门连锁烧烤店&lat=24.446690543413865&lon=117.81027361750598&dev=0&style=2">
+                        开始导航（安卓）
+                    </a>
+                    
+                    <a class="btn" href="iosamap://navi?sourceApplication=appname&poiname=厦门连锁烧烤店&lat=24.446690543413865&lon=117.81027361750598&dev=0&style=2">
+                        开始导航（苹果）
+                    </a>
+                </div>
+                <p> 方案二 </p>
+                <div class="btn-container">
+                    <!-- 自动定位导航 -->
+                    <button class="btn" id="autoNavBtn">
+                        自动定位导航-网站版
+                        <p>（大概率无法使用）</p>
+                    </button>
+                </div>
+                
+                <div id="statusMessage"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 东神团队 | 东神企业开放平台<br>
+            东神工作室 | 陈 * 版权所有</p>
+        </div>
+    </footer>
+
+    <!-- 高德地图JS API -->
+    <script src="https://webapi.amap.com/maps?v=2.0&key=c176ad0e240993eb0cf367836a814fb1"></script>
+    <script>
+        // 公司位置坐标
+        const LNG = 117.81027361750598;
+        const LAT = 24.446690543413865;
+        const BOX = document.getElementById('map-box');
+        
+        // 导航按钮相关元素
+        const autoNavBtn = document.getElementById('autoNavBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        
+        // 信息窗口变量
+        let infoWindow;
+        
+        // 设置按钮点击事件
+        autoNavBtn.addEventListener('click', handleAutoNavigation);
+        
+        // 自动导航处理函数
+        function handleAutoNavigation() {
+            // 显示加载状态
+            autoNavBtn.disabled = true;
+            autoNavBtn.textContent = '获取位置中...';
+            statusMessage.className = 'status-message';
+            statusMessage.textContent = '正在获取您的位置...';
+            
+            // 检查浏览器是否支持定位
+            if (!navigator.geolocation) {
+                showError('您的浏览器不支持定位功能');
+                resetAutoNavBtn();
+                return;
+            }
+            
+            // 获取当前位置
+            navigator.geolocation.getCurrentPosition(
+                // 成功回调
+                pos => {
+                    const slat = pos.coords.latitude;
+                    const slon = pos.coords.longitude;
+                    
+                    // 构建导航URL - 使用高德地图URI方案
+                    const url = `https://uri.amap.com/navigation?from=${slon},${slat}&to=${LNG},${LAT}&callnative=1`;
+                    
+                    // 显示成功消息
+                    showSuccess('正在跳转到高德地图...');
+                    
+                    // 跳转到高德导航
+                    setTimeout(() => {
+                        window.location.href = url;
+                    }, 1000);
+                },
+                // 错误回调
+                err => {
+                    let errorMsg = '无法获取您的位置，将使用无起点导航';
+                    
+                    // 使用无起点导航
+                    const url = `https://uri.amap.com/navigation?to=${LNG},${LAT}&callnative=1`;
+                    
+                    // 显示提示消息
+                    showSuccess('正在跳转到高德地图（无起点）...');
+                    
+                    setTimeout(() => {
+                        window.location.href = url;
+                    }, 1000);
+                },
+                // 定位选项
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 60000
+                }
+            );
+        }
+        
+        // 重置自动导航按钮状态
+        function resetAutoNavBtn() {
+            autoNavBtn.disabled = false;
+            autoNavBtn.textContent = '自动定位导航';
+        }
+        
+        // 显示成功消息
+        function showSuccess(message) {
+            statusMessage.textContent = message;
+            statusMessage.className = 'status-message success';
+        }
+        
+        // 显示错误消息
+        function showError(message) {
+            statusMessage.textContent = message;
+            statusMessage.className = 'status-message error';
+            resetAutoNavBtn();
+        }
+        
+        // 初始化地图
+        function initMap() {
+            try {
+                // 移除备用内容
+                const fallback = BOX.querySelector('.map-fallback');
+                if (fallback) {
+                    fallback.style.display = 'none';
+                }
+                
+                // 创建地图实例
+                const map = new AMap.Map('map-box', {
+                    zoom: 16,
+                    center: [LNG, LAT],
+                    viewMode: '3D'
+                });
+                
+                // 添加标记
+                const marker = new AMap.Marker({
+                    position: [LNG, LAT],
+                    title: '厦门连锁烧烤店'
+                });
+                
+                map.add(marker);
+                
+                // 点击标记显示信息窗口
+                marker.on('click', function() {
+                    infoWindow.open(map, marker.getPosition());
+                });
+                
+                // 初始显示信息窗口
+                infoWindow.open(map, marker.getPosition());
+                
+                console.log("高德地图加载成功");
+                
+            } catch (error) {
+                console.error("高德地图加载失败:", error);
+                
+                // 显示错误信息
+                const fallback = BOX.querySelector('.map-fallback');
+                if (fallback) {
+                    fallback.innerHTML = `
+                        <h3>地图加载失败</h3>
+                        <p>错误信息: ${error.message}</p>
+                        <p>请检查网络连接或API密钥配置</p>
+                    `;
+                    fallback.style.display = 'flex';
+                }
+            }
+        }
+        
+        // 等待页面完全加载后初始化地图
+        window.onload = function() {
+            // 添加一个延迟，确保高德地图JS完全加载
+            setTimeout(initMap, 500);
+        };
+    </script>
+</body>
+</html>
