@@ -1,0 +1,2 @@
+// SystemRegistry001.js
+var registeredEmails001 = ['dong18150148372@Outlook.com', 'dongshengamestudio@qq.com','dong_shen_server@163.com','dongshengamestudio@163.com','leoliwang@web.de','Smlskd@163.com'];
