@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微信扫码点餐</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        #imageContainer {
+            display: none;
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .2);
+            max-width: 90%;
+            animation: fadeIn .5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        #imageContainer img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, .1);
+        }
+        
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all .3s ease;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 500;
+        }
+        
+        .btn-primary {
+            background: #07C160;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #06a652;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(7, 193, 96, .3);
+        }
+        
+        .btn-secondary {
+            background: #576B95;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #485a7d;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(87, 107, 149, .3);
+        }
+        
+        .guide-text {
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            text-align: left;
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .guide-text h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 16px;
+        }
+        
+        .guide-text ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .guide-text li {
+            margin-bottom: 5px;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, .6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, .3);
+            max-width: 400px;
+            text-align: center;
+            animation: slideIn .3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: scale(.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .modal-message {
+            font-size: 18px;
+            margin: 0;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .countdown {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #07C160;
+        }
+        
+        .green {
+            color: #00C250;
+            font-weight: bold;
+        }
+        
+        .orange {
+            color: #FF8C00;
+            font-weight: bold;
+        }
+        
+        .red {
+            color: #FF0000;
+            font-weight: bold;
+        }
+        
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+        
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: #f0f0f0;
+            z-index: 9999;
+        }
+        
+        .loading-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #07C160;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载进度条 -->
+    <div class="loading">
+        <div class="loading-bar" id="loadingBar"></div>
+    </div>
+    
+    <!-- 模态框 -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <p class="modal-message">
+                本页由<span class="orange">东神开放平台及东神团队</span>提供。<br>该商家已开通<span class="green">代收服务</span>：<br>
+                订单金额将先进入托管账户，我们实时扣除<span class="red">28.57%</span>作为平台服务费，
+                剩余<span class="green">71.43%</span>将会在空闲时间立即转给实际经营者。<br>
+                例：您支付 <span class="orange">7元</span> → 平台扣 <span class="red">2元</span> → 商家实收 <span class="green">5元</span>
+            </p>
+            <div class="countdown">我已知悉代收规则</div>
+            <button onclick="closeModalAndContinue()" class="btn btn-primary" style="margin-top:15px;">已知悉，继续点餐</button>
+        </div>
+    </div>
+    
+    <!-- 二维码内容容器 -->
+    <div id="imageContainer">
+        <img id="qrcode" src="https://dongshenteam.github.io/BarbecueRestaurantOfficialWebsite000001A/Dcwxqrm.png" alt="扫码点餐">
+        <div class="button-group">
+            <a href="weixin://" class="btn btn-primary">📱 打开微信</a>
+            <button onclick="downloadQR()" class="btn btn-secondary">💾 下载二维码</button>
+        </div>
+        <div class="guide-text">
+            <h4>📋 使用步骤：</h4>
+            <ol>
+                <li>点击"打开微信"按钮，启动微信</li>
+                <li>或者点击"下载二维码"保存到手机</li>
+                <li>打开微信 → 点击右上角"+" → 选择"扫一扫"</li>
+                <li>从相册选择刚保存的二维码图片</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // 模拟加载进度
+        window.addEventListener('load', function() {
+            const loadingBar = document.getElementById('loadingBar');
+            let progress = 0;
+            
+            const interval = setInterval(() => {
+                progress += 5;
+                loadingBar.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.querySelector('.loading').style.display = 'none';
+                    }, 300);
+                }
+            }, 50);
+        });
+        
+        // 关闭模态框并显示二维码
+        function closeModalAndContinue() {
+            const modal = document.getElementById('modal');
+            modal.style.animation = 'fadeOut .3s ease-in';
+            setTimeout(() => {
+                modal.remove();
+                document.getElementById('imageContainer').style.display = 'block';
+            }, 300);
+        }
+        
+        // 下载二维码
+        function downloadQR() {
+            fetch('https://dongshenteam.github.io/BarbecueRestaurantOfficialWebsite000001A/Dcwxqrm.png')
+                .then(res => res.blob())
+                .then(blob => {
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = '扫码点餐.png';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(a.href);
+                })
+                .catch(() => alert('图片下载失败，请检查网络或链接是否可用'));
+        }
+    </script>
+</body>
+</html>
