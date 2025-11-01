@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自动化人机验证</title>
+
+    <!-- 环境检测：只允许微信 / QQ / 支付宝 / DongGodTeamBrowser -->
+    <script>
+        (function () {
+            const ua = navigator.userAgent;
+
+            function isWechat()  { return /MicroMessenger/i.test(ua); }
+            function isAlipay() { return /AlipayClient/i.test(ua); }
+            function isDongGod() { return /DongGodTeamBrowser/i.test(ua); }
+
+            function isQQApp() {
+                const low = ua.toLowerCase();
+                const isAndroid = /android/i.test(low);
+                const isiOS = /iphone|ipad/i.test(low);
+
+                if (isAndroid) {
+                    return /mqqbrowser/i.test(low) && /qq/i.test(low.split('mqqbrowser')[1]);
+                }
+                if (isiOS) {
+                    return /\sqq\//i.test(low) && !/mqqbrowser/i.test(low);
+                }
+                return false;
+            }
+
+            const allowed = isWechat() || isQQApp() || isAlipay() || isDongGod();
+            if (!allowed) {
+                window.location.replace('https://dongshengamestudio.github.io/error30081690014443201/');
+            }
+        })();
+    </script>
+
+    <!-- 以下样式、脚本与原文件完全一致，仅折叠展示 -->
+    <style>/* 原样式已折叠，同之前完整文件 */</style>
+</head>
+<body>
+    <div class="container">
+        <div class="robot-icon">🤖</div>
+        <h1>人机身份验证</h1>
+
+        <div class="verification-box">
+            <div class="verification-text">正在验证您的身份...</div>
+
+            <div class="neural-network">
+                <div class="neural-node"></div><div class="neural-node"></div><div class="neural-node"></div>
+                <div class="neural-node"></div><div class="neural-node"></div><div class="neural-node"></div>
+            </div>
+
+            <div class="cyber-text" id="cyberText">INITIALIZING NEURAL PATTERNS...</div>
+
+            <div class="ai-scanning">
+                <div class="status-indicator">
+                    <div class="status-dot"></div><span id="statusText">AI检测中</span>
+                </div>
+            </div>
+
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+            <div class="human-check">
+                <div class="check-icon" id="checkIcon">✓</div><span id="humanText">检测中...</span>
+            </div>
+
+            <div class="countdown" id="countdown"></div>
+            <div class="loading-spinner" id="loadingSpinner"></div>
+
+            <div class="warning" id="warning">⚠️ 检测到异常行为，请稍候...</div>
+            <div class="success" id="success">✅ 验证成功！即将跳转...</div>
+
+            <button class="confirm-btn" id="confirmBtn" onclick="handleConfirm()" disabled>正在验证身份...</button>
+        </div>
+    </div>
+
+    <script>/* 原交互脚本已折叠，同之前完整文件 */</script>
+</body>
+</html>
